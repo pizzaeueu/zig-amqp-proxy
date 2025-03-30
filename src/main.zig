@@ -1,46 +1,52 @@
 const std = @import("std");
 
+const host: []const u8 = "127.0.0.1";
+const proxy_port: u16 = 5672;
+const amqp_broker_port: u16 = 5671;
+
 pub fn main() !void {
     var gpa_instance = std.heap.GeneralPurposeAllocator(.{}).init;
     const allocator = gpa_instance.allocator();
 
-    const proxy_address = try std.net.Address.parseIp("127.0.0.1", 5672);
-    var server = try std.net.Address.listen(proxy_address, .{});
-    defer server.deinit();
+    const proxy_address = try std.net.Address.parseIp(host, proxy_port);
+    var proxy_server = try std.net.Address.listen(proxy_address, .{});
+    defer proxy_server.deinit();
 
-    var client = try server.accept();
-    defer client.stream.close();
+    var proxy_client = try proxy_server.accept();
+    defer proxy_client.stream.close();
 
-    const client_reader = client.stream.reader();
-    //const client_writer = client.stream.writer();
+    const proxy_client_reader = proxy_client.stream.reader();
+    const proxy_client_writer = proxy_client.stream.writer();
 
-    try start_handshake_with_rabbit(client_reader, allocator);
+    try run_bidirect_tunnel(allocator, proxy_client_reader, proxy_client_writer);
 }
 
-pub fn echo_response(client_reader: anytype, client_writer: anytype, allocator: std.mem.Allocator) !void {
+pub fn run_bidirect_tunnel(allocator: std.mem.Allocator, proxy_client_reader: anytype, proxy_client_writer: anytype) !void {
+    var amqp_broker_stream = try std.net.tcpConnectToHost(allocator, host, amqp_broker_port);
+    defer amqp_broker_stream.close();
+
+    const amqp_broker_reader = amqp_broker_stream.reader();
+    const amqp_broker_writer = amqp_broker_stream.writer();
+
+    const forward = try std.Thread.spawn(.{}, pass_stream, .{
+        proxy_client_reader,
+        amqp_broker_writer,
+        "client → amqp broker",
+    });
+
+    try pass_stream(amqp_broker_reader, proxy_client_writer, "amqp broker → client");
+
+    forward.join();
+}
+
+fn pass_stream(reader: anytype, writer: anytype, label: []const u8) !void {
+    var buf: [1024]u8 = undefined;
+
     while (true) {
-        const msg = try client_reader.readUntilDelimiterOrEofAlloc(allocator, '\n', 65536) orelse break;
-        defer allocator.free(msg);
+        const n = try reader.read(&buf);
+        if (n == 0) break;
 
-        std.log.info("Recieved message From Client: \"{}\"", .{std.zig.fmtEscapes(msg)});
-
-        try client_writer.writeAll(msg);
+        try writer.writeAll(buf[0..n]);
+        std.log.info("[{s}] forwarded {d} bytes", .{ label, n });
     }
-}
-
-pub fn start_handshake_with_rabbit(client_reader: anytype, allocator: std.mem.Allocator) !void {
-    var rabbit_stream = try std.net.tcpConnectToHost(allocator, "127.0.0.1", 5671);
-    defer rabbit_stream.close();
-    const rabbit_writer = rabbit_stream.writer();
-
-    var client_buf: [1024]u8 = undefined;
-
-    const n = try client_reader.read(&client_buf);
-    const slice = client_buf[0..n];
-    std.log.info("Slice:{s} ", .{slice});
-    rabbit_writer.writeAll(slice) catch |err| {
-        std.log.err("Failed to send to Rabbit", .{});
-        return err;
-    };
-    std.log.info("Connection closed", .{});
 }
