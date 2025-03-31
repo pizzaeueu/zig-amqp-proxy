@@ -1,8 +1,8 @@
 const std = @import("std");
 
-const host: []const u8 = "127.0.0.1";
-const proxy_port: u16 = 5672;
-const amqp_broker_port: u16 = 5671;
+const host: []const u8 = "0.0.0.0";
+const proxy_port: u16 = 1234;
+const amqp_broker_port: u16 = 5672;
 
 pub fn main() !void {
     var gpa_instance = std.heap.GeneralPurposeAllocator(.{}).init;
@@ -11,6 +11,8 @@ pub fn main() !void {
     const proxy_address = try std.net.Address.parseIp(host, proxy_port);
     var proxy_server = try std.net.Address.listen(proxy_address, .{});
     defer proxy_server.deinit();
+
+    std.log.info("Server started on {} port", .{proxy_port});
 
     var proxy_client = try proxy_server.accept();
     defer proxy_client.stream.close();

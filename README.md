@@ -1,3 +1,8 @@
+## Local Run [WIP]
+- run docker compose up (first run ~1m)
+- open http://localhost:15672/#/queues/%2F/hello
+- Use admin:admin to login
+- There info about messages sent to queue
 ## First Impression on ZIG
 - Didn't use the language without GC for a while, really excited to give a try
 - Build tool / code formatter is a part of the language is quite interesting
@@ -18,11 +23,18 @@ _btw was pretty fun to find Zig compile time duck typing_
 
 ## 2025-03-30
 - Finished with simple tunnel, it works with happy path and support single client
-- Spent some time to run client -> proxy and proxy -> amqp server in parallel. Actually thread API looks familiar on the first glance. Like a java's low-level abstractions.
+- Spent some time to run "client -> proxy" and "proxy -> amqp broker" in parallel. Actually thread API looks familiar on the first glance. Like a java's low-level abstractions.
 - Dove deep into Zig's memory management to understand how it works with the heap, stack, and rodata. So far, it looks relatively safe, so I'm waiting for my first memory leak 😄
+
+## 2025-03-31
+- [Discovery of the day](https://github.com/ziglang/docker-zig): _Zig makes Docker irrelevant. You probably do not need a Docker image to build your Zig application, and you definitely do not need this one._
 
 
 ===
 - `zig build run`
 - `zig build test`
 - `zig fmt`
+
+http://localhost:15672/#/queues/%2F/hello
+
+Will take about a minute first time

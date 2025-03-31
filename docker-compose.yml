@@ -5,7 +5,6 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5671:5672"
       - "15672:15672"
     environment:
       - RABBITMQ_DEFAULT_USER=admin
@@ -15,3 +14,34 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - amqp-net
+
+  amqp-proxy-zig:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: amqp-proxy-zig
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - amqp-net
+
+  amqp-producer:
+    build:
+      context: ./rabbit-producer
+      dockerfile: Dockerfile
+    container_name: amqp-producer
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      amqp-proxy-zig:
+        condition: service_started
+    environment:
+      - RABBITMQ_HOST=amqp-proxy-zig
+    networks:
+      - amqp-net
+
+networks:
+  amqp-net:
