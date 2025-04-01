@@ -1,8 +1,10 @@
-## Local Run [WIP]
-- run docker compose up (first run ~1m)
-- open http://localhost:15672/#/queues/%2F/hello
-- Use admin:admin to login
-- There info about messages sent to queue
+## Local Run
+- run `docker compose up` (first run ~1m)
+- open [http://localhost:15672/#/queues/%2F/hello](http://localhost:15672/#/queues/%2F/hello)
+- Use `admin:admin` to login
+- There is a graph with info about messages sent to the queue
+
+---
 ## First Impression on ZIG
 - Didn't use the language without GC for a while, really excited to give a try
 - Build tool / code formatter is a part of the language is quite interesting
@@ -28,13 +30,10 @@ _btw was pretty fun to find Zig compile time duck typing_
 
 ## 2025-03-31
 - [Discovery of the day](https://github.com/ziglang/docker-zig): _Zig makes Docker irrelevant. You probably do not need a Docker image to build your Zig application, and you definitely do not need this one._
+- I've stacked a bit with exposing the proxy to other containers (need to double-check `std.net.parseIp(host, proxy_port)` docs )
 
 
 ===
 - `zig build run`
 - `zig build test`
 - `zig fmt`
-
-http://localhost:15672/#/queues/%2F/hello
-
-Will take about a minute first time
