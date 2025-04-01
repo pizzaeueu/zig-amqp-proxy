@@ -32,6 +32,12 @@ _btw was pretty fun to find Zig compile time duck typing_
 - [Discovery of the day](https://github.com/ziglang/docker-zig): _Zig makes Docker irrelevant. You probably do not need a Docker image to build your Zig application, and you definitely do not need this one._
 - I've stacked a bit with exposing the proxy to other containers (need to double-check `std.net.parseIp(host, proxy_port)` docs )
 
+## 2025-04-01
+- First version of proxy is using thread API for handling multiple connections, I decided to investigate async/await approach to make it more scalable
+- `async has not been implemented in the self-hosted compiler yet` -- the last dev version says :( \
+People at forums say that it's only available via external libraries, so I will stick to the Threads API approach for now
+- Extended docker compose to run two producers that send messages continiously/ in parallel
+
 
 ===
 - `zig build run`
