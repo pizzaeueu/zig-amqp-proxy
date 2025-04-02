@@ -3,7 +3,10 @@
 - open [http://localhost:15672/#/queues/%2F/hello](http://localhost:15672/#/queues/%2F/hello)
 - Use `admin:admin` to login
 - There is a graph with info about messages sent to the queue
-
+___
+- `zig build run` -- Run the project
+- `zig build test --summary all` -- Run tests
+- `zig fmt` -- Format code
 ---
 ## First Impression on ZIG
 - Didn't use the language without GC for a while, really excited to give a try
@@ -39,7 +42,7 @@ People at forums say that it's only available via external libraries, so I will 
 - Extended docker compose to run two producers that send messages continiously/ in parallel
 
 
-===
-- `zig build run`
-- `zig build test`
-- `zig fmt`
+## 2025-04-02
+- Tried to re-use connection to AMQP broker, but it's not easy achievable due to AMQP protocol specifics
+- Add test
+- Split the code into modules

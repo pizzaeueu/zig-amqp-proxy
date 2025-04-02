@@ -5,6 +5,7 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
+      - "5672:5672"
       - "15672:15672"
     environment:
       - RABBITMQ_DEFAULT_USER=admin
@@ -17,48 +18,48 @@ services:
     networks:
       - amqp-net
 
-  amqp-proxy-zig:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: amqp-proxy-zig
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-    environment:
-      - AMQP_HOST=rabbitmq
-    networks:
-      - amqp-net
+  # amqp-proxy-zig:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: amqp-proxy-zig
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+  #   environment:
+  #     - AMQP_HOST=rabbitmq
+  #   networks:
+  #     - amqp-net
 
-  amqp-producer1:
-    build:
-      context: ./rabbit-producer
-      dockerfile: Dockerfile
-    container_name: amqp-producer1
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      amqp-proxy-zig:
-        condition: service_started
-    environment:
-      - RABBITMQ_HOST=amqp-proxy-zig
-    networks:
-      - amqp-net
+  # amqp-producer1:
+  #   build:
+  #     context: ./rabbit-producer
+  #     dockerfile: Dockerfile
+  #   container_name: amqp-producer1
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+  #     amqp-proxy-zig:
+  #       condition: service_started
+  #   environment:
+  #     - RABBITMQ_HOST=amqp-proxy-zig
+  #   networks:
+  #     - amqp-net
 
-  amqp-producer2:
-    build:
-      context: ./rabbit-producer
-      dockerfile: Dockerfile
-    container_name: amqp-producer2
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      amqp-proxy-zig:
-        condition: service_started
-    environment:
-      - RABBITMQ_HOST=amqp-proxy-zig
-    networks:
-      - amqp-net
+  # amqp-producer2:
+  #   build:
+  #     context: ./rabbit-producer
+  #     dockerfile: Dockerfile
+  #   container_name: amqp-producer2
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+  #     amqp-proxy-zig:
+  #       condition: service_started
+  #   environment:
+  #     - RABBITMQ_HOST=amqp-proxy-zig
+  #   networks:
+  #     - amqp-net
 
 networks:
   amqp-net:
