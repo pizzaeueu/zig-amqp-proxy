@@ -1,4 +1,5 @@
 ## Local Run
+There is a docker compose that run brokker, proxy server and two producers that send messages to the broker in parallel.
 - run `docker compose up` (first run ~1m)
 - open [http://localhost:15672/#/queues/%2F/hello](http://localhost:15672/#/queues/%2F/hello)
 - Use `admin:admin` to login
