@@ -4,10 +4,8 @@ import os
 import time
 import random
 
-# Настройка логирования
 logging.basicConfig(level=logging.INFO)
 
-# Подключение к RabbitMQ
 credentials = pika.PlainCredentials("admin", "admin")
 host = os.environ.get("RABBITMQ_HOST", "127.0.0.1")
 port = 1234
